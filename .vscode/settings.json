@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "unp.h": "c",
+        "config.h": "c",
+        "sctp.h": "c",
+        "unp_config.h": "c",
+        "inet.h": "c",
+        "errno.h": "c",
+        "in.h": "c",
+        "limits.h": "c",
+        "syslog.h": "c"
+    }
+}

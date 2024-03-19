@@ -1,24 +1,32 @@
-#include	"unp.h"
-#include	<time.h>
+#include "unp.h"
+#include <time.h>
 
-int
-main(int argc, char **argv)
+extern int Udp_server_reuseaddr(const char *host, const char *serv, socklen_t *addrlenp);
+
+int main(int argc, char **argv)
 {
-	int				sockfd;
-	ssize_t			n;
-	char			buff[MAXLINE];
-	time_t			ticks;
-	socklen_t		len;
-	struct sockaddr_storage	cliaddr;
+	int sockfd;
+	ssize_t n;
+	char buff[MAXLINE];
+	time_t ticks;
+	socklen_t len;
+	struct sockaddr_storage cliaddr;
 
 	if (argc == 2)
-		sockfd = Udp_server(NULL, argv[1], NULL);
+	{
+		// sockfd = Udp_server(NULL, argv[1], NULL);
+		sockfd = Udp_server_reuseaddr(NULL, argv[1], NULL);
+	}
 	else if (argc == 3)
-		sockfd = Udp_server(argv[1], argv[2], NULL);
+	{
+		// sockfd = Udp_server(argv[1], argv[2], NULL);
+		sockfd = Udp_server_reuseaddr(argv[1], argv[2], NULL);
+	}
 	else
 		err_quit("usage: daytimeudpsrv [ <host> ] <service or port>");
 
-	for ( ; ; ) {
+	for (;;)
+	{
 		len = sizeof(cliaddr);
 		n = Recvfrom(sockfd, buff, MAXLINE, 0, (SA *)&cliaddr, &len);
 		printf("datagram from %s\n", Sock_ntop((SA *)&cliaddr, len));

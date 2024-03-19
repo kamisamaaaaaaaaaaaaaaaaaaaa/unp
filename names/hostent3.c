@@ -1,16 +1,17 @@
-#include	"unp.h"
+#include "unp.h"
 
-void	pr_ipv4(char **);
+void pr_ipv4(char **);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	char			*ptr, **pptr;
-	struct hostent	*hptr;
+	char *ptr, **pptr;
+	struct hostent *hptr;
 
-	while (--argc > 0) {
+	while (--argc > 0)
+	{
 		ptr = *++argv;
-		if ( (hptr = gethostbyname(ptr)) == NULL) {
+		if ((hptr = gethostbyname(ptr)) == NULL)
+		{
 			err_msg("gethostbyname error for host: %s: %s",
 					ptr, hstrerror(h_errno));
 			continue;
@@ -20,7 +21,8 @@ main(int argc, char **argv)
 		for (pptr = hptr->h_aliases; *pptr != NULL; pptr++)
 			printf("	alias: %s\n", *pptr);
 
-		switch (hptr->h_addrtype) {
+		switch (hptr->h_addrtype)
+		{
 		case AF_INET:
 			pr_ipv4(hptr->h_addr_list);
 			break;
@@ -39,21 +41,21 @@ main(int argc, char **argv)
  */
 
 /* begin pr_ipv4 */
-void
-pr_ipv4(char **listptr)
+void pr_ipv4(char **listptr)
 {
-	struct in_addr	inaddr;
-	struct hostent	*hptr, hent;
-	char			buf[8192];
-	int				h_errno;
+	struct in_addr inaddr;
+	struct hostent *hptr, hent;
+	char buf[8192];
+	int h_errno;
 
-	for ( ; *listptr != NULL; listptr++) {
-		inaddr = *((struct in_addr *) (*listptr));
+	for (; *listptr != NULL; listptr++)
+	{
+		inaddr = *((struct in_addr *)(*listptr));
 		printf("	IPv4 address: %s", Inet_ntoa(inaddr));
 
-		if ( (hptr = gethostbyaddr_r((char *) &inaddr, sizeof(struct in_addr),
-									 AF_INET, &hent,
-									 buf, sizeof(buf), &h_errno)) == NULL)
+		if ((hptr = gethostbyaddr_r((char *)&inaddr, sizeof(struct in_addr),
+									AF_INET, &hent,
+									buf, sizeof(buf), &h_errno)) == NULL)
 			printf("    (gethostbyaddr failed: %s)\n", hstrerror(h_errno));
 		else if (hptr->h_name != NULL)
 			printf("    name = %s\n", hptr->h_name);

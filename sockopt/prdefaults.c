@@ -1,41 +1,45 @@
-#include	"unp.h"
+#include "unp.h"
 
-static doit(int, const char *);
+static void doit(int, const char *);
 
-void
-main()
+void main()
 {
-	int		tcpsock, udpsock;
-	struct sockaddr_in	servaddr;
+	int tcpsock, udpsock, sctpsock;
+	struct sockaddr_in servaddr;
 
-	if ( (tcpsock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((tcpsock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		err_sys("TCP socket error");
 
 #ifdef notdef
 	bzero(&servaddr, sizeof(servaddr));
-	servaddr.sin_family      = AF_INET;
-	servaddr.sin_port        = htons(9);
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(9);
 	if (ascii2addr(AF_INET, "127.0.0.1", &servaddr.sin_addr) != 4)
 		err_quit("ascii2addr error");
 
-	if (connect(tcpsock, (SA *) &servaddr, sizeof(servaddr)) < 0)
+	if (connect(tcpsock, (SA *)&servaddr, sizeof(servaddr)) < 0)
 		err_sys("connect error");
 #endif
 
 	doit(tcpsock, "tcp");
 
-	if ( (udpsock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+	if ((udpsock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 		err_sys("UDP socket error");
 
 	doit(udpsock, "udp");
+
+	if ((sctpsock = socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP)) < 0)
+		err_sys("UDP socket error");
+
+	doit(sctpsock, "sctp");
+
 	exit(0);
 }
 
-static
-doit(int fd, const char *name)
+static void doit(int fd, const char *name)
 {
-	int			val;
-	socklen_t	optlen;
+	int val;
+	socklen_t optlen;
 
 	optlen = sizeof(val);
 	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, &val, &optlen) < 0)

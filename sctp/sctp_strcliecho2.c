@@ -1,52 +1,55 @@
-#include	"unp.h"
+#include "unp.h"
 
-#define	SCTP_MAXLINE	800
+#define SCTP_MAXLINE 800
 
-void
-sctpstr_cli_echoall(FILE *fp, int sock_fd, struct sockaddr *to, socklen_t tolen)
+void sctpstr_cli_echoall(FILE *fp, int sock_fd, struct sockaddr *to, socklen_t tolen)
 {
 	struct sockaddr_in peeraddr;
 	struct sctp_sndrcvinfo sri;
 	char sendline[SCTP_MAXLINE], recvline[SCTP_MAXLINE];
 	socklen_t len;
-	int rd_sz,i,strsz;
+	int rd_sz, i, strsz;
 	int msg_flags;
 
-	bzero(sendline,sizeof(sendline));
-	bzero(&sri,sizeof(sri));
-	while (fgets(sendline, SCTP_MAXLINE - 9, fp) != NULL) {
+	bzero(sendline, sizeof(sendline));
+	bzero(&sri, sizeof(sri));
+	while (fgets(sendline, SCTP_MAXLINE - 9, fp) != NULL)
+	{
 		strsz = strlen(sendline);
-		if(sendline[strsz-1] == '\n') {
-			sendline[strsz-1] = '\0';
+		if (sendline[strsz - 1] == '\n')
+		{
+			sendline[strsz - 1] = '\0';
 			strsz--;
 		}
-/* include modified_echo */
-		for(i=0;i<SERV_MAX_SCTP_STRM;i++) {
+		/* include modified_echo */
+		for (i = 0; i < SERV_MAX_SCTP_STRM; i++)
+		{
 			snprintf(sendline + strsz, sizeof(sendline) - strsz,
-				".msg.%d 1", i);
-			Sctp_sendmsg(sock_fd, sendline, sizeof(sendline), 
-				     to, tolen, 
-				     0, 0,
-				     i,
-				     0, 0);
+					 ".msg.%d 1", i);
+			Sctp_sendmsg(sock_fd, sendline, sizeof(sendline),
+						 to, tolen,
+						 0, 0,
+						 i,
+						 0, 0);
 			snprintf(sendline + strsz, sizeof(sendline) - strsz,
-				".msg.%d 2", i);
-			Sctp_sendmsg(sock_fd, sendline, sizeof(sendline), 
-				     to, tolen, 
-				     0, 0,
-				     i,
-				     0, 0);
+					 ".msg.%d 2", i);
+			Sctp_sendmsg(sock_fd, sendline, sizeof(sendline),
+						 to, tolen,
+						 0, 0,
+						 i,
+						 0, 0);
 		}
-		for(i=0;i<SERV_MAX_SCTP_STRM*2;i++) {
+		for (i = 0; i < SERV_MAX_SCTP_STRM * 2; i++)
+		{
 			len = sizeof(peeraddr);
-/* end modified_echo */
+			/* end modified_echo */
 			rd_sz = Sctp_recvmsg(sock_fd, recvline, sizeof(recvline),
-				     (SA *)&peeraddr, &len,
-				     &sri,&msg_flags);
+								 (SA *)&peeraddr, &len,
+								 &sri, &msg_flags);
 			printf("From str:%d seq:%d (assoc:0x%x):",
-				sri.sinfo_stream,sri.sinfo_ssn,
-				(u_int)sri.sinfo_assoc_id);
-			printf("%.*s\n",rd_sz,recvline);
+				   sri.sinfo_stream, sri.sinfo_ssn,
+				   (unsigned int)sri.sinfo_assoc_id);
+			printf("%.*s\n", rd_sz, recvline);
 		}
 	}
 }
