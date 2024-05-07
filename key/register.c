@@ -1,12 +1,11 @@
 #include "unp.h"
-#include <net/pfkeyv2.h>
+#include <linux/pfkeyv2.h>
 
 /* include sadb_register */
-void
-sadb_register(int type)
+void sadb_register(int type)
 {
 	int s;
-	char buf[4096];	/* XXX */
+	char buf[4096]; /* XXX */
 	struct sadb_msg msg;
 	int goteof;
 	int mypid;
@@ -28,14 +27,16 @@ sadb_register(int type)
 
 	printf("\nReply returned:\n");
 	/* Read and print SADB_REGISTER reply, discarding any others */
-	for (;;) {
+	for (;;)
+	{
 		int msglen;
 		struct sadb_msg *msgp;
 
 		msglen = Read(s, &buf, sizeof(buf));
 		msgp = (struct sadb_msg *)&buf;
 		if (msgp->sadb_msg_pid == mypid &&
-			msgp->sadb_msg_type == SADB_REGISTER) {
+			msgp->sadb_msg_type == SADB_REGISTER)
+		{
 			print_sadb_msg(msgp, msglen);
 			break;
 		}
@@ -44,15 +45,16 @@ sadb_register(int type)
 }
 /* end sadb_register */
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int satype = SADB_SATYPE_UNSPEC;
 	int c;
 
-	opterr = 0;		/* don't want getopt() writing to stderr */
-	while ( (c = getopt(argc, argv, "t:")) != -1) {
-		switch (c) {
+	opterr = 0; /* don't want getopt() writing to stderr */
+	while ((c = getopt(argc, argv, "t:")) != -1)
+	{
+		switch (c)
+		{
 		case 't':
 			if ((satype = getsatypebyname(optarg)) == -1)
 				err_quit("invalid -t option %s", optarg);
@@ -63,7 +65,8 @@ main(int argc, char **argv)
 		}
 	}
 
-	if (satype == SADB_SATYPE_UNSPEC) {
+	if (satype == SADB_SATYPE_UNSPEC)
+	{
 		err_quit("must specify SA type");
 	}
 

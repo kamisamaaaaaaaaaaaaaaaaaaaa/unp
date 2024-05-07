@@ -1,24 +1,24 @@
 /* include open_pcap */
-#include	"udpcksum.h"
+#include "udpcksum.h"
 
-#define	CMD		"udp and src host %s and src port %d"
+#define CMD "udp and src host %s and src port %d"
 
-void
-open_pcap(void)
+void open_pcap(void)
 {
-	uint32_t			localnet, netmask;
-	char				cmd[MAXLINE], errbuf[PCAP_ERRBUF_SIZE],
-						str1[INET_ADDRSTRLEN], str2[INET_ADDRSTRLEN];
-	struct bpf_program	fcode;
+	uint32_t localnet, netmask;
+	char cmd[MAXLINE], errbuf[PCAP_ERRBUF_SIZE],
+		str1[INET_ADDRSTRLEN], str2[INET_ADDRSTRLEN];
+	struct bpf_program fcode;
 
-	if (device == NULL) {
-		if ( (device = pcap_lookupdev(errbuf)) == NULL)
+	if (device == NULL)
+	{
+		if ((device = pcap_lookupdev(errbuf)) == NULL)
 			err_quit("pcap_lookup: %s", errbuf);
 	}
 	printf("device = %s\n", device);
 
-		/* 4hardcode: promisc=0, to_ms=500 */
-	if ( (pd = pcap_open_live(device, snaplen, 0, 500, errbuf)) == NULL)
+	/* 4hardcode: promisc=0, to_ms=500 */
+	if ((pd = pcap_open_live(device, snaplen, 0, 500, errbuf)) == NULL)
 		err_quit("pcap_open_live: %s", errbuf);
 
 	if (pcap_lookupnet(device, &localnet, &netmask, errbuf) < 0)
@@ -39,7 +39,7 @@ open_pcap(void)
 	if (pcap_setfilter(pd, &fcode) < 0)
 		err_quit("pcap_setfilter: %s", pcap_geterr(pd));
 
-	if ( (datalink = pcap_datalink(pd)) < 0)
+	if ((datalink = pcap_datalink(pd)) < 0)
 		err_quit("pcap_datalink: %s", pcap_geterr(pd));
 	if (verbose)
 		printf("datalink = %d\n", datalink);
@@ -50,14 +50,14 @@ open_pcap(void)
 char *
 next_pcap(int *len)
 {
-	char				*ptr;
-	struct pcap_pkthdr	hdr;
+	char *ptr;
+	struct pcap_pkthdr hdr;
 
-		/* 4keep looping until packet ready */
-	while ( (ptr = (char *) pcap_next(pd, &hdr)) == NULL)
+	/* 4keep looping until packet ready */
+	while ((ptr = (char *)pcap_next(pd, &hdr)) == NULL)
 		;
 
-	*len = hdr.caplen;	/* captured length */
-	return(ptr);
+	*len = hdr.caplen; /* captured length */
+	return (ptr);
 }
 /* end next_pcap */

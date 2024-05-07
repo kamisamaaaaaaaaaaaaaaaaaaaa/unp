@@ -1,17 +1,16 @@
-#include	"unp.h"
-#include	<sys/devpoll.h>
+#include "unp.h"
+#include <sys/devpoll.h>
 
-void
-str_cli(FILE *fp, int sockfd)
+void str_cli(FILE *fp, int sockfd)
 {
-	int		stdineof;
-	char		buf[MAXLINE];
-	int		n;
-	int		wfd;
-	struct pollfd	pollfd[2];
-	struct dvpoll	dopoll;
-	int		i;
-	int		result;
+	int stdineof;
+	char buf[MAXLINE];
+	int n;
+	int wfd;
+	struct pollfd pollfd[2];
+	struct dvpoll dopoll;
+	int i;
+	int result;
 
 	wfd = Open("/dev/poll", O_RDWR, 0);
 
@@ -26,7 +25,8 @@ str_cli(FILE *fp, int sockfd)
 	Write(wfd, pollfd, sizeof(struct pollfd) * 2);
 
 	stdineof = 0;
-	for ( ; ; ) {
+	for (;;)
+	{
 		/* block until /dev/poll says something is ready */
 		dopoll.dp_timeout = -1;
 		dopoll.dp_nfds = 2;
@@ -34,22 +34,28 @@ str_cli(FILE *fp, int sockfd)
 		result = Ioctl(wfd, DP_POLL, &dopoll);
 
 		/* loop through ready file descriptors */
-		for (i = 0; i < result; i++) {
-			if (dopoll.dp_fds[i].fd == sockfd) {
+		for (i = 0; i < result; i++)
+		{
+			if (dopoll.dp_fds[i].fd == sockfd)
+			{
 				/* socket is readable */
-				if ( (n = Read(sockfd, buf, MAXLINE)) == 0) {
+				if ((n = Read(sockfd, buf, MAXLINE)) == 0)
+				{
 					if (stdineof == 1)
-						return;		/* normal termination */
+						return; /* normal termination */
 					else
 						err_quit("str_cli: server terminated prematurely");
 				}
 
 				Write(fileno(stdout), buf, n);
-			} else {
+			}
+			else
+			{
 				/* input is readable */
-				if ( (n = Read(fileno(fp), buf, MAXLINE)) == 0) {
+				if ((n = Read(fileno(fp), buf, MAXLINE)) == 0)
+				{
 					stdineof = 1;
-					Shutdown(sockfd, SHUT_WR);	/* send FIN */
+					Shutdown(sockfd, SHUT_WR); /* send FIN */
 					continue;
 				}
 

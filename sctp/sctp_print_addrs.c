@@ -1,18 +1,19 @@
-#include	"unp.h"
+#include "unp.h"
 
-void
-sctp_print_addresses(struct sockaddr_storage *addrs, int num)
+void sctp_print_addresses(struct sockaddr_storage *addrs, int num)
 {
 	struct sockaddr_storage *ss;
-	int i,salen;
+	int i, salen;
 
 	ss = addrs;
-	for(i=0; i<num; i++){
+	for (i = 0; i < num; i++)
+	{
 		printf("%s\n", Sock_ntop((SA *)ss, salen));
 #ifdef HAVE_SOCKADDR_SA_LEN
 		salen = ss->ss_len;
 #else
-		switch(ss->ss_family) {
+		switch (ss->ss_family)
+		{
 		case AF_INET:
 			salen = sizeof(struct sockaddr_in);
 			break;

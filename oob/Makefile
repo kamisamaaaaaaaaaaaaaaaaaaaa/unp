@@ -3,7 +3,7 @@ include ../Make.defines
 # XXX get autoconf to put tcprecv03p in here if the system supports poll
 PROGS =	tcprecv01 tcprecv02 tcprecv03 tcprecv04 tcprecv05 tcprecv06 \
 	 tcpsend01 tcpsend02 tcpsend03 tcpsend04 tcpsend05 tcpsend06 \
-	 tcpcli02 tcpserv02
+	 tcpcli02 tcpserv02 tcprecv03p
 
 all:	${PROGS}
 

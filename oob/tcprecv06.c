@@ -1,10 +1,9 @@
-#include	"unp.h"
+#include "unp.h"
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int		listenfd, connfd, n, on=1;
-	char	buff[100];
+	int listenfd, connfd, n, on = 1;
+	char buff[100];
 
 	if (argc == 2)
 		listenfd = Tcp_listen(NULL, argv[1], NULL);
@@ -18,15 +17,17 @@ main(int argc, char **argv)
 	connfd = Accept(listenfd, NULL, NULL);
 	sleep(5);
 
-	for ( ; ; ) {
+	for (;;)
+	{
 		if (Sockatmark(connfd))
 			printf("at OOB mark\n");
 
-		if ( (n = Read(connfd, buff, sizeof(buff)-1)) == 0) {
+		if ((n = Read(connfd, buff, sizeof(buff) - 1)) == 0)
+		{
 			printf("received EOF\n");
 			exit(0);
 		}
-		buff[n] = 0;	/* null terminate */
+		buff[n] = 0; /* null terminate */
 		printf("read %d bytes: %s\n", n, buff);
 	}
 }

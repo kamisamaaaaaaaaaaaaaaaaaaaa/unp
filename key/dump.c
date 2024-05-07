@@ -1,9 +1,8 @@
 #include "unp.h"
-#include <net/pfkeyv2.h>
+#include <linux/pfkeyv2.h>
 
 /* include sadb_dump */
-void
-sadb_dump(int type)
+void sadb_dump(int type)
 {
 	int s;
 	char buf[4096];
@@ -26,7 +25,8 @@ sadb_dump(int type)
 	printf("\nMessages returned:\n");
 	/* Read and print SADB_DUMP replies until done */
 	goteof = 0;
-	while (goteof == 0) {
+	while (goteof == 0)
+	{
 		int msglen;
 		struct sadb_msg *msgp;
 
@@ -39,15 +39,16 @@ sadb_dump(int type)
 	close(s);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int satype = SADB_SATYPE_UNSPEC;
 	int c;
 
-	opterr = 0;		/* don't want getopt() writing to stderr */
-	while ( (c = getopt(argc, argv, "t:")) != -1) {
-		switch (c) {
+	opterr = 0; /* don't want getopt() writing to stderr */
+	while ((c = getopt(argc, argv, "t:")) != -1)
+	{
+		switch (c)
+		{
 		case 't':
 			if ((satype = getsatypebyname(optarg)) == -1)
 				err_quit("invalid -t option %s", optarg);

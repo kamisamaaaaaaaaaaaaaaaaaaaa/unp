@@ -1,10 +1,9 @@
-#include	"unp.h"
+#include "unp.h"
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int					sockfd;
-	struct sockaddr_un	servaddr, cliaddr;
+	int sockfd;
+	struct sockaddr_un servaddr, cliaddr;
 
 	sockfd = Socket(AF_LOCAL, SOCK_DGRAM, 0);
 
@@ -13,7 +12,7 @@ main(int argc, char **argv)
 	servaddr.sun_family = AF_LOCAL;
 	strcpy(servaddr.sun_path, UNIXDG_PATH);
 
-	Bind(sockfd, (SA *) &servaddr, sizeof(servaddr));
+	Bind(sockfd, (SA *)&servaddr, sizeof(servaddr));
 
-	dg_echo(sockfd, (SA *) &cliaddr, sizeof(cliaddr));
+	dg_echo(sockfd, (SA *)&cliaddr, sizeof(cliaddr));
 }

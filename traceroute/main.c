@@ -1,30 +1,42 @@
-#include	"trace.h"
+#include "trace.h"
+#include <getopt.h>
 
-struct proto	proto_v4 = { icmpcode_v4, recv_v4, NULL, NULL, NULL, NULL, 0,
-							 IPPROTO_ICMP, IPPROTO_IP, IP_TTL };
+struct proto proto_v4 = {icmpcode_v4, recv_v4, NULL, NULL, NULL, NULL, 0,
+						 IPPROTO_ICMP, IPPROTO_IP, IP_TTL};
 
-#ifdef	IPV6
-struct proto	proto_v6 = { icmpcode_v6, recv_v6, NULL, NULL, NULL, NULL, 0,
-							 IPPROTO_ICMPV6, IPPROTO_IPV6, IPV6_UNICAST_HOPS };
+#ifdef IPV6
+struct proto proto_v6 = {icmpcode_v6, recv_v6, NULL, NULL, NULL, NULL, 0,
+						 IPPROTO_ICMPV6, IPPROTO_IPV6, IPV6_UNICAST_HOPS};
 #endif
 
-int		datalen = sizeof(struct rec);	/* defaults */
-int		max_ttl = 30;
-int		nprobes = 3;
-u_short	dport = 32768 + 666;
+int datalen = sizeof(struct rec); /* defaults */
+int ttl, max_ttl = 30;
+int probe, nprobes = 3;
+u_short sport, dport = 32768 + 666;
+char *host;
+int nsent;
+pid_t pid;
+int sendfd, recvfd;
+int verbose;
 
-int
-main(int argc, char **argv)
+char recvbuf[BUFSIZE];
+char sendbuf[BUFSIZE];
+
+struct proto *pr;
+
+int main(int argc, char **argv)
 {
-	int				c;
-	struct addrinfo	*ai;
+	int c;
+	struct addrinfo *ai;
 	char *h;
 
-	opterr = 0;		/* don't want getopt() writing to stderr */
-	while ( (c = getopt(argc, argv, "m:v")) != -1) {
-		switch (c) {
+	opterr = 0; /* don't want getopt() writing to stderr */
+	while ((c = getopt(argc, argv, "m:v")) != -1)
+	{
+		switch (c)
+		{
 		case 'm':
-			if ( (max_ttl = atoi(optarg)) <= 1)
+			if ((max_ttl = atoi(optarg)) <= 1)
 				err_quit("invalid -m value");
 			break;
 
@@ -37,7 +49,7 @@ main(int argc, char **argv)
 		}
 	}
 
-	if (optind != argc-1)
+	if (optind != argc - 1)
 		err_quit("usage: traceroute [ -m <maxttl> -v ] <hostname>");
 	host = argv[optind];
 
@@ -51,19 +63,23 @@ main(int argc, char **argv)
 		   ai->ai_canonname ? ai->ai_canonname : h,
 		   h, max_ttl, datalen);
 
-		/* initialize according to protocol */
-	if (ai->ai_family == AF_INET) {
+	/* initialize according to protocol */
+	if (ai->ai_family == AF_INET)
+	{
 		pr = &proto_v4;
-#ifdef	IPV6
-	} else if (ai->ai_family == AF_INET6) {
+#ifdef IPV6
+	}
+	else if (ai->ai_family == AF_INET6)
+	{
 		pr = &proto_v6;
 		if (IN6_IS_ADDR_V4MAPPED(&(((struct sockaddr_in6 *)ai->ai_addr)->sin6_addr)))
 			err_quit("cannot traceroute IPv4-mapped IPv6 address");
 #endif
-	} else
+	}
+	else
 		err_quit("unknown address family %d", ai->ai_family);
 
-	pr->sasend = ai->ai_addr;		/* contains destination address */
+	pr->sasend = ai->ai_addr; /* contains destination address */
 	pr->sarecv = Calloc(1, ai->ai_addrlen);
 	pr->salast = Calloc(1, ai->ai_addrlen);
 	pr->sabind = Calloc(1, ai->ai_addrlen);

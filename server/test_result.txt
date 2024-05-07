@@ -1,0 +1,126 @@
+# client: ./client 192.168.193.135 8888 5 10000 4000
+
+
+program               user_time                   sys_time             tot_time              diff
+serv00                0.021272                    3.32706              3.34834               0
+serv01                13.3863                     9.91818              23.3045               19.95616
+
+serv02(15 children)   0.183699                    3.79265              3.97634               0.628
+
+child 0, 3269 connections
+child 1, 3183 connections
+child 2, 3286 connections
+child 3, 3303 connections
+child 4, 3414 connections
+child 5, 3366 connections
+child 6, 3343 connections
+child 7, 3509 connections
+child 8, 3193 connections
+child 9, 3281 connections
+child 10, 3484 connections
+child 11, 3375 connections
+child 12, 3230 connections
+child 13, 3385 connections
+child 14, 3379 connections
+
+#惊群测试：大量空闲进程被唤醒
+# client: ./client 192.168.193.135 8888 5 3 4000
+serv02(30 children)   0.009168                    0.025566             0.034734              
+serv02(500 children)   0.120706                    0.081631             0.202337             
+
+serv02l(15 children)  0.09869                     4.7288               4.82749               1.47915  
+
+serv03(15 children)   0.055163                    5.08828              5.14344
+
+child 0, 3430 connections
+child 1, 3375 connections
+child 2, 3393 connections
+child 3, 3369 connections
+child 4, 3249 connections
+child 5, 3322 connections
+child 6, 3280 connections
+child 7, 3348 connections
+child 8, 3325 connections
+child 9, 3404 connections
+child 10, 3301 connections
+child 11, 3307 connections
+child 12, 3321 connections
+child 13, 3263 connections
+child 14, 3313 connections
+
+#惊群测试：大量空闲进程被唤醒
+# client: ./client 192.168.193.135 8888 5 3 4000
+serv03(30 children)      0.080887      5.22299       5.30388
+serv03(500 children)     1.1655        21.3966       22.5621
+
+serv04(15 children)      0.070777      4.34792       4.4187
+
+serv05(15 children)      0.059399      6.69103       6.75042
+child 0, 20795 connections
+child 1, 13345 connections
+child 2, 6362 connections
+child 3, 2897 connections
+child 4, 2107 connections
+child 5, 1709 connections
+child 6, 1647 connections
+child 7, 920 connections
+child 8, 200 connections
+child 9, 17 connections
+child 10, 1 connections
+child 11, 0 connections
+child 12, 0 connections
+child 13, 0 connections
+child 14, 0 connections
+
+serv06         0.125668                   7.82016                     7.94583 
+
+serv07(15 threads)        0.059813             4.50112                4.56093
+thread 0, 3337 connections
+thread 1, 3415 connections
+thread 2, 3320 connections
+thread 3, 3359 connections
+thread 4, 3349 connections
+thread 5, 3399 connections
+thread 6, 3319 connections
+thread 7, 3339 connections
+thread 8, 3366 connections
+thread 9, 3320 connections
+thread 10, 3309 connections
+thread 11, 3350 connections
+thread 12, 3286 connections
+thread 13, 3260 connections
+thread 14, 3272 connections
+
+serv07(15 threads no lock)       0.114696              3.85952                3.97422
+thread 0, 3350 connections
+thread 1, 3331 connections
+thread 2, 3214 connections
+thread 3, 3350 connections
+thread 4, 3427 connections
+thread 5, 3372 connections
+thread 6, 3312 connections
+thread 7, 3399 connections
+thread 8, 3405 connections
+thread 9, 3379 connections
+thread 10, 3309 connections
+thread 11, 3400 connections
+thread 12, 3321 connections
+thread 13, 3349 connections
+thread 14, 3082 connections
+
+serv08(15 threads)               0.057753               4.86194               4.91969
+thread 0, 3428 connections
+thread 1, 3310 connections
+thread 2, 3398 connections
+thread 3, 3344 connections
+thread 4, 3374 connections
+thread 5, 3229 connections
+thread 6, 3304 connections
+thread 7, 3440 connections
+thread 8, 3508 connections
+thread 9, 3428 connections
+thread 10, 3262 connections
+thread 11, 3303 connections
+thread 12, 3247 connections
+thread 13, 3189 connections
+thread 14, 3236 connections

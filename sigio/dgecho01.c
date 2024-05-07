@@ -1,41 +1,42 @@
 /* include dgecho1 */
-#include	"unp.h"
+#include "unp.h"
 
-static int		sockfd;
+static int sockfd;
 
-#define	QSIZE	   8		/* size of input queue */
-#define	MAXDG	4096		/* max datagram size */
+#define QSIZE 8	   /* size of input queue */
+#define MAXDG 4096 /* max datagram size */
 
-typedef struct {
-  void		*dg_data;		/* ptr to actual datagram */
-  size_t	dg_len;			/* length of datagram */
-  struct sockaddr  *dg_sa;	/* ptr to sockaddr{} w/client's address */
-  socklen_t	dg_salen;		/* length of sockaddr{} */
+typedef struct
+{
+	void *dg_data;			/* ptr to actual datagram */
+	size_t dg_len;			/* length of datagram */
+	struct sockaddr *dg_sa; /* ptr to sockaddr{} w/client's address */
+	socklen_t dg_salen;		/* length of sockaddr{} */
 } DG;
-static DG	dg[QSIZE];			/* queue of datagrams to process */
-static long	cntread[QSIZE+1];	/* diagnostic counter */
+static DG dg[QSIZE];			/* queue of datagrams to process */
+static long cntread[QSIZE + 1]; /* diagnostic counter */
 
-static int	iget;		/* next one for main loop to process */
-static int	iput;		/* next one for signal handler to read into */
-static int	nqueue;		/* # on queue for main loop to process */
-static socklen_t clilen;/* max length of sockaddr{} */
+static int iget;		 /* next one for main loop to process */
+static int iput;		 /* next one for signal handler to read into */
+static int nqueue;		 /* # on queue for main loop to process */
+static socklen_t clilen; /* max length of sockaddr{} */
 
-static void	sig_io(int);
-static void	sig_hup(int);
+static void sig_io(int);
+static void sig_hup(int);
 /* end dgecho1 */
 
 /* include dgecho2 */
-void
-dg_echo(int sockfd_arg, SA *pcliaddr, socklen_t clilen_arg)
+void dg_echo(int sockfd_arg, SA *pcliaddr, socklen_t clilen_arg)
 {
-	int			i;
-	const int	on = 1;
-	sigset_t	zeromask, newmask, oldmask;
+	int i;
+	const int on = 1;
+	sigset_t zeromask, newmask, oldmask;
 
 	sockfd = sockfd_arg;
 	clilen = clilen_arg;
 
-	for (i = 0; i < QSIZE; i++) {	/* init queue of buffers */
+	for (i = 0; i < QSIZE; i++)
+	{ /* init queue of buffers */
 		dg[i].dg_data = Malloc(MAXDG);
 		dg[i].dg_sa = Malloc(clilen);
 		dg[i].dg_salen = clilen;
@@ -48,17 +49,18 @@ dg_echo(int sockfd_arg, SA *pcliaddr, socklen_t clilen_arg)
 	Ioctl(sockfd, FIOASYNC, &on);
 	Ioctl(sockfd, FIONBIO, &on);
 
-	Sigemptyset(&zeromask);		/* init three signal sets */
+	Sigemptyset(&zeromask); /* init three signal sets */
 	Sigemptyset(&oldmask);
 	Sigemptyset(&newmask);
-	Sigaddset(&newmask, SIGIO);	/* signal we want to block */
+	Sigaddset(&newmask, SIGIO); /* signal we want to block */
 
 	Sigprocmask(SIG_BLOCK, &newmask, &oldmask);
-	for ( ; ; ) {
+	for (;;)
+	{
 		while (nqueue == 0)
-			sigsuspend(&zeromask);	/* wait for datagram to process */
+			sigsuspend(&zeromask); /* wait for datagram to process */
 
-			/* 4unblock SIGIO */
+		/* 4unblock SIGIO */
 		Sigprocmask(SIG_SETMASK, &oldmask, NULL);
 
 		Sendto(sockfd, dg[iget].dg_data, dg[iget].dg_len, 0,
@@ -67,7 +69,7 @@ dg_echo(int sockfd_arg, SA *pcliaddr, socklen_t clilen_arg)
 		if (++iget >= QSIZE)
 			iget = 0;
 
-			/* 4block SIGIO */
+		/* 4block SIGIO */
 		Sigprocmask(SIG_BLOCK, &newmask, &oldmask);
 		nqueue--;
 	}
@@ -78,11 +80,12 @@ dg_echo(int sockfd_arg, SA *pcliaddr, socklen_t clilen_arg)
 static void
 sig_io(int signo)
 {
-	ssize_t		len;
-	int			nread;
-	DG			*ptr;
+	ssize_t len;
+	int nread;
+	DG *ptr;
 
-	for (nread = 0; ; ) {
+	for (nread = 0;;)
+	{
 		if (nqueue >= QSIZE)
 			err_quit("receive overflow");
 
@@ -90,9 +93,10 @@ sig_io(int signo)
 		ptr->dg_salen = clilen;
 		len = recvfrom(sockfd, ptr->dg_data, MAXDG, 0,
 					   ptr->dg_sa, &ptr->dg_salen);
-		if (len < 0) {
+		if (len < 0)
+		{
 			if (errno == EWOULDBLOCK)
-				break;		/* all done; no more queued to read */
+				break; /* all done; no more queued to read */
 			else
 				err_sys("recvfrom error");
 		}
@@ -102,9 +106,8 @@ sig_io(int signo)
 		nqueue++;
 		if (++iput >= QSIZE)
 			iput = 0;
-
 	}
-	cntread[nread]++;		/* histogram of # datagrams read per signal */
+	cntread[nread]++; /* histogram of # datagrams read per signal */
 }
 /* end sig_io */
 
@@ -112,7 +115,7 @@ sig_io(int signo)
 static void
 sig_hup(int signo)
 {
-	int		i;
+	int i;
 
 	for (i = 0; i <= QSIZE; i++)
 		printf("cntread[%d] = %ld\n", i, cntread[i]);

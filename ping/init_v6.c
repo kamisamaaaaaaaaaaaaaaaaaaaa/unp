@@ -1,12 +1,12 @@
 #include "ping.h"
 
-void
-init_v6()
+void init_v6()
 {
 #ifdef IPV6
 	int on = 1;
 
-	if (verbose == 0) {
+	if (verbose == 0)
+	{
 		/* install a filter that only passes ICMP6_ECHO_REPLY unless verbose */
 		struct icmp6_filter myfilt;
 		ICMP6_FILTER_SETBLOCKALL(&myfilt);

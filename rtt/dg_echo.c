@@ -1,13 +1,13 @@
-#include	"unp.h"
+#include "unp.h"
 
-void
-dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen)
+void dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen)
 {
-	int			n;
-	socklen_t	len;
-	char		mesg[MAXLINE];
+	int n;
+	socklen_t len;
+	char mesg[MAXLINE];
 
-	for ( ; ; ) {
+	for (;;)
+	{
 		len = clilen;
 		n = Recvfrom(sockfd, mesg, MAXLINE, 0, pcliaddr, &len);
 

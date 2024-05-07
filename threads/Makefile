@@ -1,16 +1,15 @@
 include ../Make.defines
 
-PROGS =	web01 web02 web03 \
-	tcpcli01 tcpcli02 tcpserv01 tcpserv02 \
+PROGS =	web03 tcpcli01 tcpcli02 tcpserv01 tcpserv02 \
 	test01 example01 example02 example03
 
 all:	${PROGS}
 
-web01:	web01.o
-		${CC} ${CFLAGS} -o $@ web01.o ${LIBS}
+# web01:	web01.o
+# 		${CC} ${CFLAGS} -o $@ web01.o ${LIBS}
 
-web02:	web02.o
-		${CC} ${CFLAGS} -o $@ web02.o ${LIBS}
+# web02:	web02.o
+# 		${CC} ${CFLAGS} -o $@ web02.o ${LIBS}
 
 web03:	web03.o
 		${CC} ${CFLAGS} -o $@ web03.o ${LIBS}

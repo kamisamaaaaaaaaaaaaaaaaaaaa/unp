@@ -1,14 +1,13 @@
 /* include my_lock_init */
-#include	"unpthread.h"
-#include	<sys/mman.h>
+#include "unpthread.h"
+#include <sys/mman.h>
 
-static pthread_mutex_t	*mptr;	/* actual mutex will be in shared memory */
+static pthread_mutex_t *mptr; /* actual mutex will be in shared memory */
 
-void
-my_lock_init(char *pathname)
+void my_lock_init(char *pathname)
 {
-	int		fd;
-	pthread_mutexattr_t	mattr;
+	int fd;
+	pthread_mutexattr_t mattr;
 
 	fd = Open("/dev/zero", O_RDWR, 0);
 
@@ -23,14 +22,12 @@ my_lock_init(char *pathname)
 /* end my_lock_init */
 
 /* include my_lock_wait */
-void
-my_lock_wait()
+void my_lock_wait()
 {
 	Pthread_mutex_lock(mptr);
 }
 
-void
-my_lock_release()
+void my_lock_release()
 {
 	Pthread_mutex_unlock(mptr);
 }

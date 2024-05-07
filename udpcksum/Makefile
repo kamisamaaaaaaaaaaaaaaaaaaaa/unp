@@ -7,15 +7,15 @@ PROGS =	udpcksum udpcksum-libnet
 all:	${PROGS}
 
 udpcksum:	${OBJS}
-		${CC} ${CFLAGS} -o $@ ${OBJS} -L/usr/local/lib -lpcap ${LIBS}
+		${CC} ${CFLAGS} -o $@ ${OBJS} -lpcap ${LIBS}
 
 # Include special linking flags from libnet-config program
 udpcksum-libnet:	${OBJSNET}
-		${CC} ${CFLAGS} -o $@ ${OBJSNET} -L/usr/local/lib -lpcap ${LIBS} `libnet-config --libs`
+		${CC} ${CFLAGS} -o $@ ${OBJSNET} -lpcap -lnet ${LIBS}
 
 # Include special compilation flags from libnet-config program
 senddnsquery-libnet.o:	senddnsquery-libnet.c
-		${CC} ${CFLAGS} `libnet-config --defines --cflags` -c -o $@ $<
+		${CC} ${CFLAGS} -lnet -c -o $@ $<
 
 clean:
 		rm -f ${PROGS} ${CLEANFILES}

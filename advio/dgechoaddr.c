@@ -1,31 +1,31 @@
-#include	"unpifi.h"
+#include "unpifi.h"
 
-#undef	MAXLINE
-#define	MAXLINE	20		/* to see datagram truncation */
+#undef MAXLINE
+#define MAXLINE 20 /* to see datagram truncation */
 
-void
-dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen)
+void dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen)
 {
-	int						flags;
-	const int				on = 1;
-	socklen_t				len;
-	ssize_t					n;
-	char					mesg[MAXLINE], str[INET6_ADDRSTRLEN],
-							ifname[IFNAMSIZ];
-	struct in_addr			in_zero;
-	struct unp_in_pktinfo	pktinfo;
+	int flags;
+	const int on = 1;
+	socklen_t len;
+	ssize_t n;
+	char mesg[MAXLINE], str[INET6_ADDRSTRLEN],
+		ifname[IFNAMSIZ];
+	struct in_addr in_zero;
+	struct unp_in_pktinfo pktinfo;
 
-#ifdef	IP_RECVDSTADDR
+#ifdef IP_RECVDSTADDR
 	if (setsockopt(sockfd, IPPROTO_IP, IP_RECVDSTADDR, &on, sizeof(on)) < 0)
 		err_ret("setsockopt of IP_RECVDSTADDR");
 #endif
-#ifdef	IP_RECVIF
+#ifdef IP_RECVIF
 	if (setsockopt(sockfd, IPPROTO_IP, IP_RECVIF, &on, sizeof(on)) < 0)
 		err_ret("setsockopt of IP_RECVIF");
 #endif
-	bzero(&in_zero, sizeof(struct in_addr));	/* all 0 IPv4 address */
+	bzero(&in_zero, sizeof(struct in_addr)); /* all 0 IPv4 address */
 
-	for ( ; ; ) {
+	for (;;)
+	{
 		len = clilen;
 		flags = 0;
 		n = Recvfrom_flags(sockfd, mesg, MAXLINE, &flags,
@@ -37,17 +37,21 @@ dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen)
 		if (pktinfo.ipi_ifindex > 0)
 			printf(", recv i/f = %s",
 				   If_indextoname(pktinfo.ipi_ifindex, ifname));
-#ifdef	MSG_TRUNC
-		if (flags & MSG_TRUNC)	printf(" (datagram truncated)");
+#ifdef MSG_TRUNC
+		if (flags & MSG_TRUNC)
+			printf(" (datagram truncated)");
 #endif
-#ifdef	MSG_CTRUNC
-		if (flags & MSG_CTRUNC)	printf(" (control info truncated)");
+#ifdef MSG_CTRUNC
+		if (flags & MSG_CTRUNC)
+			printf(" (control info truncated)");
 #endif
-#ifdef	MSG_BCAST
-		if (flags & MSG_BCAST)	printf(" (broadcast)");
+#ifdef MSG_BCAST
+		if (flags & MSG_BCAST)
+			printf(" (broadcast)");
 #endif
-#ifdef	MSG_MCAST
-		if (flags & MSG_MCAST)	printf(" (multicast)");
+#ifdef MSG_MCAST
+		if (flags & MSG_MCAST)
+			printf(" (multicast)");
 #endif
 		printf("\n");
 
